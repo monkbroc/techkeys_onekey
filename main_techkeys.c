@@ -17,12 +17,12 @@
 #define NUM_KEYS 3
 
 #define BLUE_LED 0
-#define KEY1_LED 3
+#define KEY1_LED 1
 #define KEY2_LED 2
-#define KEY3_LED 1
-#define KEY1_SWITCH 6
+#define KEY3_LED 3
+#define KEY1_SWITCH 4
 #define KEY2_SWITCH 5
-#define KEY3_SWITCH 4
+#define KEY3_SWITCH 6
 
 #define DEBOUNCE_TIMER 10
 
