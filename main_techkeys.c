@@ -43,6 +43,7 @@ const struct keysConfig_t {
 
 struct keys_t {
 	bool state;
+	bool sticky;
 	bool fallingEdge;
 	bool risingEdge;
 	char debounceTime;
@@ -75,6 +76,7 @@ void debounce() {
 		} else if(!keys[i].state && newState) {
 			keys[i].risingEdge = true;
 			keys[i].state = true;
+			keys[i].sticky = !keys[i].sticky;
 			keys[i].debounceTime = DEBOUNCE_TIMER;
 		} else if(keys[i].state && !newState) {
 			keys[i].fallingEdge = true;
@@ -95,6 +97,24 @@ void setLed(int pin, bool state) {
 }
 
 void sendKeys() {
+	// CTRL and ALT are sticky
+	for(unsigned char i = 0; i < 2; i++) {
+		if(keys[i].fallingEdge) {
+			sendKey(keysConfig[i].keycode, keys[i].sticky);
+			setLed(keysConfig[i].ledPin, keys[i].sticky ? LED_ON : LED_OFF);
+		}
+	}
+	// DELETE is not sticky
+	for(unsigned char i = 2; i < 3; i++) {
+		if(keys[i].fallingEdge) {
+			sendKey(keysConfig[i].keycode, true);
+			setLed(keysConfig[i].ledPin, LED_ON);
+		} else if(keys[i].risingEdge) {
+			sendKey(keysConfig[i].keycode, false);
+			setLed(keysConfig[i].ledPin, LED_OFF);
+		}
+	}
+	/*
 	for(unsigned char i = 0; i < NUM_KEYS; i++) {
 		if(keys[i].fallingEdge) {
 			sendKey(keysConfig[i].keycode, true);
@@ -104,6 +124,7 @@ void sendKeys() {
 			setLed(keysConfig[i].ledPin, LED_OFF);
 		}
 	}
+	*/
 }
 
 void setup() {

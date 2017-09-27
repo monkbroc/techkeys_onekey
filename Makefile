@@ -26,10 +26,10 @@ obj/techkeys/%.o: %.c | obj/techkeys
 #endef
 #$(foreach target,$(TARGETS),$(eval $(call INCLUDE_TEMPLATE,$(target))))
 
-bin/$(RESULT_techkeys).elf: $(SOURCES_techkeys:%.c=obj/techkeys/%.o) $(BASE_SOURCES:%.c=obj/techkeys/%.o) | bin/
+bin/$(RESULT_techkeys).elf: $(SOURCES_techkeys:%.c=obj/techkeys/%.o) $(BASE_SOURCES:%.c=obj/techkeys/%.o) | bin
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OPTS_techkeys) -o $@ $^
 
-bin/:
+bin:
 	$(MKDIR) bin
 
 bin/%.hex: bin/%.elf
@@ -46,9 +46,9 @@ techkeys: bin/$(RESULT_techkeys).hex
 # Check that the device appears in lsusb as ID 03eb:2fef Atmel Corp
 # Then make flash to program
 flash:
-	sudo dfu-programmer $(MICROCONTROLLER) erase
-	sudo dfu-programmer $(MICROCONTROLLER) flash bin/$(RESULT_techkeys).hex
-	sudo dfu-programmer $(MICROCONTROLLER) start
+	dfu-programmer $(MICROCONTROLLER) erase
+	dfu-programmer $(MICROCONTROLLER) flash bin/$(RESULT_techkeys).hex
+	dfu-programmer $(MICROCONTROLLER) start
 
 
 
