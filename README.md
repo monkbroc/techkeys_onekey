@@ -24,3 +24,8 @@ you'll see at the top Atmel USB Devices -> ATmega16U2
 
 Run `make flash`
 
+## License
+
+Original code from [komar007 on Geekhack](https://geekhack.org/index.php?topic=53378.0), changes Copyright (C) 2017 Julien Vanier.
+
+Released under the MIT license.
