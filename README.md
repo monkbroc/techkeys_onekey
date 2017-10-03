@@ -1,4 +1,8 @@
-# Techkeys keyboard
+# Techkeys OneKey keyboard
+
+This is firmware to run on [this cute one key keyboard from Techkeys](https://techkeys.us/collections/accessories/products/onekeyboard).
+
+## Instructions
 
 [Forum post on compiling the Techkeys firmware](https://geekhack.org/index.php?topic=53378.0)
 

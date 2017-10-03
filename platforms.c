@@ -96,3 +96,11 @@ struct pin_config PINS[NUM_IO] = {
 	{.portx = &PORTB, .pinx = &PINB, .ddrx = &DDRB, .mask = _BV(PB0)}, // dummy
 };
 #endif
+
+#ifdef PLATFORM_onekey
+struct pin_config PINS[NUM_IO] = {
+	{.portx = &PORTD, .pinx = &PIND, .ddrx = &DDRD, .mask = _BV(PD4)}, // corner led
+	{.portx = &PORTD, .pinx = &PIND, .ddrx = &DDRD, .mask = _BV(PD3)}, // led 1
+	{.portx = &PORTB, .pinx = &PINB, .ddrx = &DDRB, .mask = _BV(PB1)}, // sw 1
+};
+#endif

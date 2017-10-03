@@ -17,9 +17,9 @@ endif
 obj/techkeys:
 	$(MKDIR) $(call fix_path, obj/techkeys)
 obj/techkeys/%.d: %.c | obj/techkeys
-	@$(CC) $(CFLAGS) $(OPTS_techkeys) -DPLATFORM_techkeys -MM -MT "$(@:.d=.o) $@" $< > $@
+	@$(CC) $(CFLAGS) $(OPTS_techkeys) -DPLATFORM_onekey -MM -MT "$(@:.d=.o) $@" $< > $@
 obj/techkeys/%.o: %.c | obj/techkeys
-	$(CC) $(CFLAGS) $(OPTS_techkeys) -DPLATFORM_techkeys -c -o $@ $<
+	$(CC) $(CFLAGS) $(OPTS_techkeys) -DPLATFORM_onekey -c -o $@ $<
 
 #define INCLUDE_TEMPLATE=
 #-include $$(SOURCES_$1:%.c=obj/$1/%.d) $$(BASE_SOURCES:%.c=obj/$1/%.d)

@@ -1,3 +1,4 @@
+
 #include "platforms.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -14,51 +15,47 @@
 #include "timer.h"
 #include "auxiliary.h"
 
-#define NUM_KEYS 3
-
 #define BLUE_LED 0
 #define KEY1_LED 1
-#define KEY2_LED 2
-#define KEY3_LED 3
-#define KEY1_SWITCH 4
-#define KEY2_SWITCH 5
-#define KEY3_SWITCH 6
+#define KEY1_SWITCH 2
 
 #define DEBOUNCE_TIMER 10
 
 #define LED_ON false
 #define LED_OFF true
 
-const char allLeds[] = { BLUE_LED, KEY1_LED, KEY2_LED, KEY3_LED };
+const char allLeds[] = { BLUE_LED, KEY1_LED };
+#define NUM_ALL_LEDS ARR_SZ(allLeds)
 
 const struct keysConfig_t {
 	char switchPin;
 	char ledPin;
-	int keycode;
-} keysConfig[NUM_KEYS] = {
-	{ KEY1_SWITCH, KEY1_LED, KCTRL},
-	{ KEY2_SWITCH, KEY2_LED, KALT},
-	{ KEY3_SWITCH, KEY3_LED, KDELETE},
+} keysConfig[] = {
+	{ KEY1_SWITCH, KEY1_LED },
+};
+#define NUM_KEYS ARR_SZ(keysConfig)
+
+const uint8_t keyString[] = {
+	KS, KU, KD, KO, KSPACE, KS, KU, KENTER
 };
 
 struct keys_t {
 	bool state;
-	bool sticky;
 	bool fallingEdge;
 	bool risingEdge;
 	char debounceTime;
 } keys[NUM_KEYS];
 
 void initLeds() {
-	for(unsigned char i = 0; i < sizeof(allLeds)/sizeof(allLeds[0]); i++) {
-		IO_set(i, LED_OFF);
-		IO_config(i, OUTPUT);
+	for(unsigned i = 0; i < NUM_ALL_LEDS; i++) {
+		IO_set(allLeds[i], LED_OFF);
+		IO_config(allLeds[i], OUTPUT);
 	}
 }
 
 void initKeys() {
 	memset(&keys, sizeof(keys), 0);
-	for(unsigned char i = 0; i < NUM_KEYS; i++) {
+	for(unsigned i = 0; i < NUM_KEYS; i++) {
 		IO_config(keysConfig[i].switchPin, INPUT);
 		IO_set(keysConfig[i].switchPin, true);
 	}
@@ -76,7 +73,6 @@ void debounce() {
 		} else if(!keys[i].state && newState) {
 			keys[i].risingEdge = true;
 			keys[i].state = true;
-			keys[i].sticky = !keys[i].sticky;
 			keys[i].debounceTime = DEBOUNCE_TIMER;
 		} else if(keys[i].state && !newState) {
 			keys[i].fallingEdge = true;
@@ -96,35 +92,24 @@ void setLed(int pin, bool state) {
 	IO_set(pin, state);
 }
 
+void sendString(const uint8_t* string, unsigned length) {
+	for (unsigned i = 0; i < length; ++i) {
+		if (string[i] == KSEMICOLON || string[i] == K2) {
+			sendKey(KSHIFT, true);
+		}
+		sendKey(string[i], true);
+		sendKey(string[i], false);
+		if (string[i] == KSEMICOLON || string[i] == K2) {
+			sendKey(KSHIFT, false);
+		}
+	}
+}
+
 void sendKeys() {
-	// CTRL and ALT are sticky
-	for(unsigned char i = 0; i < 2; i++) {
-		if(keys[i].fallingEdge) {
-			sendKey(keysConfig[i].keycode, keys[i].sticky);
-			setLed(keysConfig[i].ledPin, keys[i].sticky ? LED_ON : LED_OFF);
-		}
+	if (keys[0].fallingEdge) {
+		sendString(keyString, ARR_SZ(keyString));
 	}
-	// DELETE is not sticky
-	for(unsigned char i = 2; i < 3; i++) {
-		if(keys[i].fallingEdge) {
-			sendKey(keysConfig[i].keycode, true);
-			setLed(keysConfig[i].ledPin, LED_ON);
-		} else if(keys[i].risingEdge) {
-			sendKey(keysConfig[i].keycode, false);
-			setLed(keysConfig[i].ledPin, LED_OFF);
-		}
-	}
-	/*
-	for(unsigned char i = 0; i < NUM_KEYS; i++) {
-		if(keys[i].fallingEdge) {
-			sendKey(keysConfig[i].keycode, true);
-			setLed(keysConfig[i].ledPin, LED_ON);
-		} else if(keys[i].risingEdge) {
-			sendKey(keysConfig[i].keycode, false);
-			setLed(keysConfig[i].ledPin, LED_OFF);
-		}
-	}
-	*/
+	setLed(1, keys[0].state);
 }
 
 void setup() {
@@ -158,8 +143,9 @@ int main(void)
 
 void MAIN_timer_handler()
 {
-	//for (int i = 0; i < 3; ++i)
-	//	IO_set(1+i, IO_get(4+i));
+	for (unsigned i = 0; i < NUM_KEYS; ++i) {
+		IO_set(keysConfig[i].ledPin, IO_get(keysConfig[i].switchPin));
+	}
 }
 
 void MAIN_handle_sof()

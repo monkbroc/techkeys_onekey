@@ -21,6 +21,7 @@ static inline bool PLL_is_locked()
 /* enable or disable USB pad regulator */
 static inline void USB_set_pads_regulator(bool state)
 {
+	(void)state; /* ignore unused parameter */
 #if defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
 	/* make sure the controller is in device mode */
 	UHWCON |= _BV(UIMOD);

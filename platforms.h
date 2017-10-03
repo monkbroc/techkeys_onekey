@@ -37,6 +37,9 @@
 #elif defined(PLATFORM_techkeys)
 	#define NUM_IO			7
 	#define NUM_LEDS		4
+#elif defined(PLATFORM_onekey)
+	#define NUM_IO			3
+	#define NUM_LEDS		2
 #else
 	#define NUM_IO			1
 	#define NUM_LEDS		0
